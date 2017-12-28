@@ -20,6 +20,7 @@ dependencies <- function(y) {
   }
 }
 dependencies("data.table")
+dependencies("lubridate")
 dependencies("ROAuth")
 dependencies("rtweet")
 
@@ -32,7 +33,6 @@ if (file.exists(folder)){
   dir.create(file.path(root, folder))
   setwd(file.path(root, folder))
 }
-
 
 # Fetch follower IDs; if rate limit is encountered, script will sleep for 15 minutes
 follower_ids <- get_followers(x, n = 200000000, parse = TRUE, retryonratelimit = TRUE)
@@ -54,6 +54,7 @@ followers <- rep(NA, length(list.files()))
 if(length(filenames) > 1)
   for (i in seq_along(ids)) {
     followers[i] <- lapply(ids[i], lookup_users)
+    message("Rate limit encountered - going to sleep for 15 minutes at ", paste(format(Sys.time(), format = '%H:%M:%S')))
     Sys.sleep(15*60)
   } else {
     for (i in seq_along(ids)) {
