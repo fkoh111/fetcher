@@ -27,7 +27,7 @@ dependencies("rtweet")
 
 ## Initialize temporary container for follower ids.
 root <- getwd()
-folder <- paste("id_chunks", x)
+folder <- paste("id_chunks", x, sep = "_")
 if (file.exists(folder)){
   setwd(file.path(root, folder))
 } else {
@@ -70,6 +70,7 @@ system(paste("rm -rf '", folder,"'", sep = ""))
 
 return(binded_followers)
 }
+
 
 ## Function usage
 fetched_followers <- fetcher("...")
