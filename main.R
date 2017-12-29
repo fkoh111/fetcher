@@ -5,7 +5,7 @@
      ### fetch followers' user data from Twitter accounts without having to worry   ###
     ### about rate limits and users with more than 90.000 followers.               ###
    ### Use the fetcher function as any of the original rtweet functions.          ###
-  ### For further information see github:                                        ###
+  ### For further information see github: https://github.com/fkoh111/backloader  ###
  ##################################################################################
 
 
