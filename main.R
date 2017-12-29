@@ -1,22 +1,23 @@
-######################
-### TEST VARIABLES ###
-######################
 
-rm(list=ls())
+        ##################################################################################
+       ### FETCHER (v. 0.9)                                                           ###
+      ### An external function for the rtweet package making it easy for R users to  ###
+     ### fetch followers' user data from Twitter accounts without having to worry   ###
+    ### about rate limits and users with more than 90.000 followers.               ###
+   ### Use the fetcher function as any of the original rtweet functions.          ###
+  ### For further information see github:                                        ###
+ ##################################################################################
 
-x <- c("fkoh111")
 
-######################
-######################
-
-
+# Defining function fetcher() with one argument. Either a Twitter username or a user ID
+fetcher <- function (x) {
 
 # Check for required packages; download, install and load if necessary
 dependencies <- function(y) {
   y <- as.character(match.call() [[2]])
-  if (!require(y, character.only=TRUE)){
-    install.packages(pkgs = y, repos="http://cran.r-project.org")
-    require(y, character.only=TRUE)
+  if (!require(y, character.only = TRUE)){
+    install.packages(pkgs = y, repos = "http://cran.r-project.org")
+    require(y, character.only = TRUE)
   }
 }
 dependencies("data.table")
@@ -68,3 +69,7 @@ setwd(root)
 system(paste("rm -rf '", folder,"'", sep = ""))
 
 return(binded_followers)
+}
+
+# Function usage
+fetched_followers <- fetcher("...")
