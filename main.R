@@ -9,9 +9,9 @@
  ##################################################################################
 
 
-# Defining function fetcher() with one argument. Either a Twitter username or a user ID
+# Defining function fetcher() with one argument. Either a Twitter username or a user id
 fetcher <- function (x) {
-
+        
 # Check for required packages; download, install and load if necessary
 dependencies <- function(y) {
   y <- as.character(match.call() [[2]])
@@ -25,7 +25,7 @@ dependencies("lubridate")
 dependencies("ROAuth")
 dependencies("rtweet")
 
-# Initialize temporary container for follower IDs.
+# Initialize temporary container for follower ids.
 root <- getwd()
 folder <- paste("id_chunks", x)
 if (file.exists(folder)){
@@ -35,13 +35,13 @@ if (file.exists(folder)){
   setwd(file.path(root, folder))
 }
 
-# Fetch follower IDs; if rate limit is encountered, script will sleep for 15 minutes
+# Fetch follower ids; if rate limit is encountered, script will sleep for 15 minutes
 follower_ids <- get_followers(x, n = 200000000, parse = TRUE, retryonratelimit = TRUE)
 
-# Split follower IDs into .txt chunks
-chunks_follower_ids <- split(follower_ids, (seq(nrow(follower_ids))-1) %/% 3600)
+# Split follower ids into .txt chunks
+chunks_follower_ids <- split(follower_ids, (seq(nrow(follower_ids))-1) %/% 90000)
 
-# Write follower IDs to temporary container
+# Write follower ids to temporary container
 for (i in 1:length(chunks_follower_ids)) {
   write.table(chunks_follower_ids[i], row.names = FALSE, col.names = FALSE, file=paste0(names(chunks_follower_ids)[i], ".txt"))
 }
@@ -73,5 +73,3 @@ return(binded_followers)
 
 # Function usage
 fetched_followers <- fetcher("...")
-
-getwd()
