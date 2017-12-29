@@ -9,10 +9,10 @@
  ##################################################################################
 
 
-# Defining function fetcher() with one argument. Either a Twitter username or a user id
+## Defining function fetcher() with one argument. Either a Twitter username or a user id
 fetcher <- function (x) {
         
-# Check for required packages; download, install and load if necessary
+## Check for required packages; download, install and load if necessary
 dependencies <- function(y) {
   y <- as.character(match.call() [[2]])
   if (!require(y, character.only = TRUE)){
@@ -25,9 +25,9 @@ dependencies("lubridate")
 dependencies("ROAuth")
 dependencies("rtweet")
 
-# Initialize temporary container for follower ids.
+## Initialize temporary container for follower ids.
 root <- getwd()
-folder <- paste("id_chunks", x)
+folder <- paste("id_chunks", x, sep = "_")
 if (file.exists(folder)){
   setwd(file.path(root, folder))
 } else {
@@ -35,22 +35,22 @@ if (file.exists(folder)){
   setwd(file.path(root, folder))
 }
 
-# Fetch follower ids; if rate limit is encountered, script will sleep for 15 minutes
+## Fetch follower ids; if rate limit is encountered, script will sleep for 15 minutes
 follower_ids <- get_followers(x, n = 200000000, parse = TRUE, retryonratelimit = TRUE)
 
-# Split follower ids into .txt chunks
+## Split follower ids into .txt chunks
 chunks_follower_ids <- split(follower_ids, (seq(nrow(follower_ids))-1) %/% 90000)
 
-# Write follower ids to temporary container
+## Write follower ids to temporary container
 for (i in 1:length(chunks_follower_ids)) {
   write.table(chunks_follower_ids[i], row.names = FALSE, col.names = FALSE, file=paste0(names(chunks_follower_ids)[i], ".txt"))
 }
 
-# Read id chunk files
+## Read id chunk files
 filenames <- list.files(path = getwd(), pattern="*.txt", full.names = TRUE)
 ids <- lapply(filenames, read.table)
 
-# Lookup id chunk files and sleep if rate limit is encountered
+## Lookup id chunk files and sleep if rate limit is encountered
 followers <- rep(NA, length(list.files()))
 if(length(filenames) > 1)
   for (i in seq_along(ids)) {
@@ -61,15 +61,16 @@ if(length(filenames) > 1)
     for (i in seq_along(ids)) {
       followers[i] <- lapply(ids[i], lookup_users)}}
 
-# Bind followers
+## Bind followers
 binded_followers <- rbindlist(followers, fill=TRUE)
 
-# Clean up
+## Clean up
 setwd(root)
 system(paste("rm -rf '", folder,"'", sep = ""))
 
 return(binded_followers)
 }
 
-# Function usage
+
+## Function usage
 fetched_followers <- fetcher("...")
