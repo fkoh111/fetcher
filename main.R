@@ -73,3 +73,5 @@ return(binded_followers)
 
 # Function usage
 fetched_followers <- fetcher("...")
+
+getwd()
