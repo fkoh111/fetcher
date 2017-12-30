@@ -21,7 +21,6 @@ dependencies <- function(y) {
   }
 }
 dependencies("data.table")
-dependencies("lubridate")
 dependencies("ROAuth")
 dependencies("rtweet")
 
@@ -36,6 +35,7 @@ if (file.exists(folder)){
 }
 
 ## Fetch follower ids; if rate limit is encountered, script will sleep for 15 minutes
+message("Starting to fetch follower IDs at ", paste(format(Sys.time(), format = '%H:%M:%S')))
 follower_ids <- get_followers(x, n = 200000000, parse = TRUE, retryonratelimit = TRUE)
 
 ## Split follower ids into .txt chunks
@@ -73,4 +73,4 @@ return(binded_followers)
 
 
 ## Function usage
-fetched_followers <- fetcher("...")
+fetched_followers <- fetcher("tommyannfeldt")
