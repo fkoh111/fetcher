@@ -1,18 +1,18 @@
 
-        ##################################################################################
-       ### FETCHER (v. 0.9)                                                           ###
-      ### An external function for the rtweet package making it easy for R users to  ###
-     ### fetch followers' user data from Twitter accounts without having to worry   ###
-    ### about rate limits and users with more than 90.000 followers.               ###
-   ### Use the fetcher function as any of the original rtweet functions.          ###
-  ### For further information see github: https://github.com/fkoh111/fetcher     ###
- ##################################################################################
+##############################################################################
+# FETCHER (v. 0.9)                                                           #
+# A UDF for the rtweet package making it easy for R users to                 #
+# fetch followers' user data from Twitter accounts without having to worry   #
+# about rate limits and users with more than 90.000 followers.               #
+# Use fetcher as any of the original rtweet functions.                       #
+# For further information see github: https://github.com/fkoh111/fetcher     #
+##############################################################################
 
 
-## Defining function fetcher() with one argument. Either a Twitter username or a user id
+# fetcher() takes one argument. Either a Twitter username or a user id
 fetcher <- function (x) {
         
-## Check for required packages; download, install and load if necessary
+# Checking for package dependencies; downloading, installing and loading if necessary
 dependencies <- function(y) {
   y <- as.character(match.call() [[2]])
   if (!require(y, character.only = TRUE)){
@@ -21,10 +21,9 @@ dependencies <- function(y) {
   }
 }
 dependencies("data.table")
-dependencies("ROAuth")
 dependencies("rtweet")
 
-## Initialize temporary container for follower ids.
+# Initializing temporary folder for follower ids. On exit the folder will be purged and working directory reset.
 root <- getwd()
 folder <- paste("id_chunks", x, sep = "_")
 if (file.exists(folder)){
@@ -34,37 +33,37 @@ if (file.exists(folder)){
   setwd(file.path(root, folder))
 }
 
-## Fetch follower ids; if rate limit is encountered, script will sleep for 15 minutes
+# Fetching follower ids; if rate limit is encountered: sleep for 15 minutes
 message("Starting to fetch follower IDs at ", paste(format(Sys.time(), format = '%H:%M:%S')))
 follower_ids <- get_followers(x, n = 200000000, parse = TRUE, retryonratelimit = TRUE)
 
-## Split follower ids into .txt chunks
-chunks_follower_ids <- split(follower_ids, (seq(nrow(follower_ids))-1) %/% 90000)
+# Spliting follower_ids into n chunk_follower_ids, each chunk containing a maximum of 90.000 Twitter ids
+chunk_follower_ids <- split(follower_ids, (seq(nrow(follower_ids))-1) %/% 90000)
 
-## Write follower ids to temporary container
-for (i in 1:length(chunks_follower_ids)) {
-  write.table(chunks_follower_ids[i], row.names = FALSE, col.names = FALSE, file=paste0(names(chunks_follower_ids)[i], ".txt"))
+# Writing chunk_follower_ids to temporary folder
+for (i in 1:length(chunk_follower_ids)) {
+  write.table(chunk_follower_ids[i], row.names = FALSE, col.names = FALSE, file=paste0(names(chunk_follower_ids)[i], ".txt"))
 }
 
-## Read id chunk files
+# Listing and reading chunk_follower_ids from temporary folder
 filenames <- list.files(path = getwd(), pattern="*.txt", full.names = TRUE)
 ids <- lapply(filenames, read.table)
 
-## Lookup id chunk files and sleep if rate limit is encountered
+# From chunk_follower_ids user data is being fetched. Rate limit is being avoided by sleeping after each chunk_follower_ids have been looked up
 followers <- rep(NA, length(list.files()))
 if(length(filenames) > 1)
   for (i in seq_along(ids)) {
     followers[i] <- lapply(ids[i], lookup_users)
-    message("Rate limit encountered - going to sleep for 15 minutes at ", paste(format(Sys.time(), format = '%H:%M:%S')))
+    message("Avoiding rate limit by sleeping for 15 minutes at ", paste(format(Sys.time(), format = '%H:%M:%S')))
     Sys.sleep(15*60)
   } else {
     for (i in seq_along(ids)) {
       followers[i] <- lapply(ids[i], lookup_users)}}
 
-## Bind followers
-binded_followers <- rbindlist(followers, fill=TRUE)
+# Binding followers user data into a data.table
+binded_followers <- rbindlist(followers, fill = TRUE)
 
-## Clean up
+# Clean up: resetting the working directory, purging temporary folder and id chunks
 setwd(root)
 system(paste("rm -rf '", folder,"'", sep = ""))
 
@@ -72,5 +71,5 @@ return(binded_followers)
 }
 
 
-## Function usage
-fetched_followers <- fetcher("tommyannfeldt")
+# Function usage
+fetched_followers <- fetcher("...")
