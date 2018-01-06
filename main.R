@@ -1,6 +1,5 @@
-
 ##############################################################################
-# FETCHER (v. 0.9)                                                           #
+# FETCHER (v. 0.9.1)                                                         #
 # A UDF for the rtweet package making it easy for R users to                 #
 # fetch followers' user data from Twitter accounts without having to worry   #
 # about rate limits and users with more than 90.000 followers.               #
@@ -9,8 +8,7 @@
 ##############################################################################
 
 
-
-# fetcher() takes two argument. X = Either a Twitter username or a user id. Y = an arbitrary string deciding whether or not a temp folder should be purged
+# fetcher() takes two arguments. X = Either a Twitter username or a user id. Y = an arbitrary string deciding whether or not a temp folder should be purged upon completion or not
 fetcher <- function (x, y) {
 
         
@@ -27,7 +25,7 @@ dependencies("rtweet")
 
 
 # Initializing session by looking up OS, getting wd and setting a session id
-client_os <- Sys.info()[['sysname']]
+#TODO: client_os <- Sys.info()[['sysname']]
 root <- getwd()
 session_id <- gsub("\\.", "", runif(1))
 
@@ -43,8 +41,9 @@ if (file.exists(folder)){
 
 
 # Fetching follower ids; if rate limit is encountered: sleep for 15 minutes
-message("Starting to fetch follower IDs at ", paste(format(Sys.time(), format = '%H:%M:%S')))
-follower_ids <- get_followers(x, n = 200000000, parse = TRUE, retryonratelimit = TRUE)
+n_follower_ids <- (lookup_users(x)$followers_count)
+message("Starting to fetch ", noquote(paste(n_follower_ids)), " follower IDs at ", paste(format(Sys.time(), format = '%H:%M:%S')))
+follower_ids <- get_followers(x, n = as.integer(noquote(n_follower_ids)), parse = TRUE, retryonratelimit = TRUE, verbose = FALSE)
 
 
 # Spliting follower_ids into n chunk_follower_ids, each chunk containing a maximum of 90.000 Twitter ids
@@ -78,20 +77,14 @@ if(length(filenames) > 1)
 binded_followers <- rbindlist(followers, fill = TRUE)
 
 
-# Clean up: resetting the working directory, purging temporary folder and id chunks if argument supplied in fetcher()
+# Clean up: resetting the working directory, purging temporary folder and id chunks if y argument has not been supplied
 setwd(root)
-
-if(missing(y)){
-  system(paste("rm -rf '", folder,"'", sep = ""))
-  message("Removing ", paste(folder))
-} else {
-  message("Keeping the tmp folder ", paste(folder), " in path: ", paste(getwd()))
-}
-
+if(missing(y)) y = system(paste("rm -rf '", folder,"'", sep = ""));
+message("Jobs done at ", paste(format(Sys.time(), format = '%H:%M:%S')))
 
 return(binded_followers)
 }
 
 
 # Function usage
-fetched_followers <- fetcher("fkoh111", x)
+fetched_followers <- fetcher("tommyannfeldt", true)
