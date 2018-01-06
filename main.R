@@ -9,16 +9,17 @@
 ##############################################################################
 
 
-# fetcher() takes one argument. Either a Twitter username or a user id
-fetcher <- function (x) {
+
+# fetcher() takes two argument. X = Either a Twitter username or a user id. Y = an arbitrary string deciding whether or not a temp folder should be purged
+fetcher <- function (x, y) {
 
         
 # Checking for package dependencies; downloading, installing and loading if necessary
-dependencies <- function(y) {
-  y <- as.character(match.call() [[2]])
-  if (!require(y, character.only = TRUE)){
-    install.packages(pkgs = y, repos = "http://cran.r-project.org")
-    require(y, character.only = TRUE)
+dependencies <- function(z) {
+  z <- as.character(match.call() [[2]])
+  if (!require(z, character.only = TRUE)){
+    install.packages(pkgs = z, repos = "http://cran.r-project.org")
+    require(z, character.only = TRUE)
   }
 }
 dependencies("data.table")
@@ -45,7 +46,7 @@ if (file.exists(folder)){
 message("Starting to fetch follower IDs at ", paste(format(Sys.time(), format = '%H:%M:%S')))
 follower_ids <- get_followers(x, n = 200000000, parse = TRUE, retryonratelimit = TRUE)
 
-get_followers
+
 # Spliting follower_ids into n chunk_follower_ids, each chunk containing a maximum of 90.000 Twitter ids
 chunk_follower_ids <- split(follower_ids, (seq(nrow(follower_ids))-1) %/% 90000)
 sapply
@@ -77,13 +78,20 @@ if(length(filenames) > 1)
 binded_followers <- rbindlist(followers, fill = TRUE)
 
 
-# Clean up: resetting the working directory, purging temporary folder and id chunks
+# Clean up: resetting the working directory, purging temporary folder and id chunks if argument supplied in fetcher()
 setwd(root)
-system(paste("rm -rf '", folder,"'", sep = ""))
+
+if(missing(y)){
+  system(paste("rm -rf '", folder,"'", sep = ""))
+  message("Removing ", paste(folder))
+} else {
+  message("Keeping the tmp folder ", paste(folder), " in path: ", paste(getwd()))
+}
+
 
 return(binded_followers)
 }
 
 
 # Function usage
-fetched_followers <- fetcher("...")
+fetched_followers <- fetcher("fkoh111", x)
