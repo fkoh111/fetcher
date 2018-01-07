@@ -1,4 +1,4 @@
-## Fetcher v. 0.9
+## Fetcher v. 0.9.1
 
 **Author:** Frederik Kok Hansen  
 frederik_kok@icloud.com
@@ -11,6 +11,6 @@ Overall the function `fetcher()` is a wrapper for the `lookup_users()` function.
 
 As with the functions from the rtweet package, it is assumed that you have a non-exhausted Twitter token in your environment for the function to work properly. 
 
-The function has only been tested on **nix* OS. In general fetcher should work on Windows as well, but there could potentially be problems when the script is trying to remove the temporary folders with chunks of follower IDs.
+Please note that the function has only been tested on **nix* OS.
 
 For any questions please don't hesitate to contact me on GitHub or by e-mail. Also, any pull requests and proposals are more than welcome.
