@@ -69,7 +69,7 @@ binded_followers <- rbindlist(followers, fill = TRUE)
 
 
 # Clean up: resetting the working directory, purging temporary folder and id chunks if y argument has not been supplied
-setwd(root)
+on.exit(setwd(root), add = TRUE)
 message("Jobs done at ", paste(format(Sys.time(), format = '%H:%M:%S')))
 
 return(binded_followers)
@@ -77,4 +77,4 @@ return(binded_followers)
 
 
 # Function usage
-fetched_followers <- fetcher("tommyannfeldt")
+fetched_followers <- fetcher("fkoh111")
