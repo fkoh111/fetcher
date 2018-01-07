@@ -11,18 +11,6 @@
 # fetcher() takes one arguments: either a Twitter username or a user id
 fetcher <- function (x) {
 
-        
-# Checking for package dependencies; downloading, installing and loading if necessary
-dependencies <- function(z) {
-  z <- as.character(match.call() [[2]])
-  if (!require(z, character.only = TRUE)){
-    install.packages(pkgs = z, repos = "http://cran.r-project.org")
-    require(z, character.only = TRUE)
-  }
-}
-dependencies("data.table")
-dependencies("rtweet")
-
 
 # Setting a temporary folder for follower ids. On exit the directory will be reset
 root <- getwd()
@@ -65,7 +53,7 @@ if(length(filenames) > 1)
 
 
 # Binding followers user data via data.table
-binded_followers <- rbindlist(followers, fill = TRUE)
+binded_followers <- do_call_rbind(followers)
 
 
 # Clean up
