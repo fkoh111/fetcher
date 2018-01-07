@@ -8,8 +8,8 @@
 ##############################################################################
 
 
-# fetcher() takes two arguments. X = Either a Twitter username or a user id. Y = an arbitrary string deciding whether or not a temp folder should be purged upon completion or not
-fetcher <- function (x, y) {
+# fetcher() takes one arguments: either a Twitter username or a user id
+fetcher <- function (x) {
 
         
 # Checking for package dependencies; downloading, installing and loading if necessary
@@ -24,31 +24,22 @@ dependencies("data.table")
 dependencies("rtweet")
 
 
-# Initializing session by looking up OS, getting wd and setting a session id
-#TODO: client_os <- Sys.info()[['sysname']]
+# Setting a temporary folder for follower ids. On exit the directory will be reset
 root <- getwd()
-session_id <- gsub("\\.", "", runif(1))
-
-
-# Initializing temporary folder for follower ids. On exit the folder will be purged and working directory reset
-folder <- paste("id_chunks", x, session_id, sep = "_")
-if (file.exists(folder)){
-  setwd(file.path(root, folder))
-} else {
-  dir.create(file.path(root, folder))
-  setwd(file.path(root, folder))
-}
+tmp_path <- tempfile(pattern = x, tmpdir = tempdir())
+dir.create(tmp_path)
+setwd(tmp_path)
 
 
 # Fetching follower ids; if rate limit is encountered: sleep for 15 minutes
 n_follower_ids <- (lookup_users(x)$followers_count)
-message("Starting to fetch ", noquote(paste(n_follower_ids)), " follower IDs at ", paste(format(Sys.time(), format = '%H:%M:%S')))
-follower_ids <- get_followers(x, n = as.integer(noquote(n_follower_ids)), parse = TRUE, retryonratelimit = TRUE, verbose = FALSE)
+message("Starting to fetch ", paste(n_follower_ids), " follower IDs at ", paste(format(Sys.time(), format = '%H:%M:%S')))
+follower_ids <- get_followers(x, n = as.integer(n_follower_ids), parse = TRUE, retryonratelimit = TRUE, verbose = FALSE)
 
 
 # Spliting follower_ids into n chunk_follower_ids, each chunk containing a maximum of 90.000 Twitter ids
 chunk_follower_ids <- split(follower_ids, (seq(nrow(follower_ids))-1) %/% 90000)
-sapply
+
 
 # Writing chunk_follower_ids to temporary folder
 for (i in 1:length(chunk_follower_ids)) {
@@ -57,7 +48,7 @@ for (i in 1:length(chunk_follower_ids)) {
 
 
 # Listing and reading chunk_follower_ids from temporary folder
-filenames <- list.files(path = getwd(), pattern="*.txt", full.names = TRUE)
+filenames <- list.files(path = tmp_path, pattern="*.txt", full.names = TRUE)
 ids <- lapply(filenames, read.table)
 
 
@@ -79,7 +70,6 @@ binded_followers <- rbindlist(followers, fill = TRUE)
 
 # Clean up: resetting the working directory, purging temporary folder and id chunks if y argument has not been supplied
 setwd(root)
-if(missing(y)) y = system(paste("rm -rf '", folder,"'", sep = ""));
 message("Jobs done at ", paste(format(Sys.time(), format = '%H:%M:%S')))
 
 return(binded_followers)
@@ -87,4 +77,4 @@ return(binded_followers)
 
 
 # Function usage
-fetched_followers <- fetcher("tommyannfeldt", true)
+fetched_followers <- fetcher("tommyannfeldt")
