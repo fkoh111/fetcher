@@ -7,6 +7,7 @@
 # For further information see github: https://github.com/fkoh111/fetcher     #
 ##############################################################################
 
+#x <- "fkoh111"
 
 # fetcher() takes one arguments: either a Twitter username or a user id
 fetcher <- function (x) {
@@ -30,9 +31,11 @@ chunk_follower_ids <- split(follower_ids, (seq(nrow(follower_ids))-1) %/% 90000)
 
 
 # Writing chunk_follower_ids to temp_path
-for (i in 1:length(chunk_follower_ids)) {
-  write.table(chunk_follower_ids[i], row.names = FALSE, col.names = FALSE, file=paste0(names(chunk_follower_ids)[i], ".txt"))
-}
+#for (i in 1:length(chunk_follower_ids)) {
+#  write.table(chunk_follower_ids[i], row.names = FALSE, col.names = FALSE, file=paste0(names(chunk_fol#lower_ids)[i], ".txt"))
+#}
+
+lapply(chunk_follower_ids, function(x) write.table(x, row.names = FALSE, col.names = FALSE, file = paste0(names(x), ".txt")))
 
 
 # Listing and reading chunk_follower_ids from temp_path
@@ -65,4 +68,5 @@ return(binded_followers)
 
 
 # Function usage
-fetched_followers <- fetcher("fkoh111")
+fetched_followers <- fetcher("hadleywickham")
+fetched_followers
