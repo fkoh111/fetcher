@@ -1,5 +1,5 @@
 ##############################################################################
-# FETCHER (v. 0.9.1)                                                         #
+# FETCHER (v. 0.9.2)                                                         #
 # A UDF for the rtweet package making it easy for R users to                 #
 # fetch followers' user data from Twitter accounts without having to worry   #
 # about rate limits and users with more than 90.000 followers.               #
