@@ -71,4 +71,4 @@ return(binded_followers)
 }
 
 # Function usage
-fetched_followers <- fetcher("mkrasnik")
+fetched_followers <- fetcher("fkoh111")
