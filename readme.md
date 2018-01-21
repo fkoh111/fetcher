@@ -1,4 +1,4 @@
-## Fetcher v. 0.9.3
+## Fetcher v. 0.9.4
 
 **Author:** Frederik Kok Hansen  
 frederik_kok@icloud.com
