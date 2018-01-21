@@ -7,11 +7,6 @@
 # For further information see github: https://github.com/fkoh111/fetcher     #
 ##############################################################################
 
-#TODO: General refactoring, comments, more readable expressions etc.
-#TODO: users_estimate seems to work improperly
-#TODO: Rename X and Y argument
-#TODO: Include verbose argument and include calls for messages if true
-
 
 # fetcher() takes two arguments: x = a Twitter username or a user id. y = a path to a chosen output folder for temporary files
 fetcher <- function (x, y = NULL) {
