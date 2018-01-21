@@ -7,6 +7,11 @@
 # For further information see github: https://github.com/fkoh111/fetcher     #
 ##############################################################################
 
+#TODO: General refactoring, comments, more readable expressions etc.
+#TODO: users_estimate seems to work improperly
+#TODO: Rename X and Y argument
+#TODO: Include verbose argument and include calls for messages if true
+
 
 # fetcher() takes two arguments: x = a Twitter username or a user id. y = a path to a chosen output folder for temporary files
 fetcher <- function (x, y = NULL) {
@@ -25,7 +30,6 @@ setwd(tmp_path)
 n_follower_ids <- (lookup_users(x)$followers_count)
 
 # Initializing parameters
-param_ids <- 75000
 param_sleep <- 900
 param_users <- 90000
 trunc_follower_ids <- sum(trunc(n_follower_ids / param_users) * param_sleep)
@@ -62,8 +66,11 @@ followers <- rep(NA, length(filenames))
 if(length(filenames) > 1)
   for (i in seq_along(ids)) {
   followers[i] <- lapply(ids[i], lookup_users)
+  if (i > length(filenames) -1){
+    break
+  }
   sleep_estimate <- format(Sys.time() + param_sleep, format = '%H:%M:%S')
-  message("Avoiding rate limit by sleeping for 15 minutes. Will start again at ", paste(sleep_estimate), ".")
+  message("Avoiding rate limit by sleeping for 15 minutes. Will start again at approximately ", paste(sleep_estimate), ".")
   Sys.sleep(param_sleep)
   } else {
     for (i in seq_along(ids)) {
@@ -81,4 +88,4 @@ return(binded_followers)
 }
 
 # Function usage
-fetched_followers <- fetcher("larsloekke", "~/Desktop/")
+fetched_followers <- fetcher("mkrasnik", "~/Desktop/")
