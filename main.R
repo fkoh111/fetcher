@@ -1,5 +1,5 @@
 ##############################################################################
-# FETCHER (v. 0.9.3)                                                         #
+# FETCHER (v. 0.9.4)                                                         #
 # A UDF for the rtweet package making it easy for R users to                 #
 # fetch followers' user data from Twitter accounts without having to worry   #
 # about rate limits and users with more than 90.000 followers.               #
@@ -7,12 +7,17 @@
 # For further information see github: https://github.com/fkoh111/fetcher     #
 ##############################################################################
 
-# fetcher() takes one arguments: either a Twitter username or a user id
-fetcher <- function (x) {
-  
-# Setting a temporary folder for follower ids. On exit the directory will be reset
+
+# fetcher() takes two arguments: x = a Twitter username or a user id. y = a path to a chosen output folder for temporary files
+fetcher <- function (x, y = NULL) {
+
+# Setting folder for follower ids. On exit the directory will be reset
 root <- getwd()
-tmp_path <- tempfile(pattern = x, tmpdir = tempdir())
+if(!is.null(y)) {
+  tmp_path <- tempfile(pattern = x, tmpdir = y)
+} else {
+  tmp_path <- tempfile(pattern = x, tmpdir = tempdir())
+}
 dir.create(tmp_path)
 setwd(tmp_path)
 
@@ -46,29 +51,34 @@ ids <- lapply(filenames, read.table)
 
 # Estimating and printing when the lookup_users process will be done
 if(length(filenames) > 1) {
-  users_estimate <- format(Sys.time() + length(filenames), format = '%H:%M:%S')
+  users_estimate <- format(Sys.time() + length(filenames) * param_sleep, format = '%H:%M:%S')
   message("Starting to look up users. Expects to be done at ", paste(users_estimate), ".")  
 } else {
   NULL
 }
 
 # From chunk_follower_ids user data is fetched. Rate limit is avoided by sleeping after each chunk_follower_ids have been looked up
-if(length(filenames) > 1) {
-  followers <- lapply(ids, lookup_users)
-  message("Avoiding rate limit by sleeping for 15 minutes at ", paste(format(Sys.time(), format = '%H:%M:%S')))
+followers <- rep(NA, length(filenames))
+if(length(filenames) > 1)
+  for (i in seq_along(ids)) {
+  followers[i] <- lapply(ids[i], lookup_users)
+  sleep_estimate <- format(Sys.time() + param_sleep, format = '%H:%M:%S')
+  message("Avoiding rate limit by sleeping for 15 minutes. Will start again at ", paste(sleep_estimate), ".")
   Sys.sleep(param_sleep)
   } else {
-  followers <- lapply(ids, lookup_users)}
+    for (i in seq_along(ids)) {
+    followers[i] <- lapply(ids[i], lookup_users)}
+    }
 
-# Binding followers user data via data.table
+# Binding followers user data
 binded_followers <- do_call_rbind(followers)
 
 # Clean up
 on.exit(setwd(root), add = TRUE)
-message("Jobs done at ", paste(format(Sys.time(), format = '%H:%M:%S')))
+message("Jobs done at ", paste(format(Sys.time(), format = '%H:%M:%S')), ".")
 
 return(binded_followers)
 }
 
 # Function usage
-fetched_followers <- fetcher("fkoh111")
+fetched_followers <- fetcher("larsloekke", "~/Desktop/")
