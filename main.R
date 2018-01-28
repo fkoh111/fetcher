@@ -8,23 +8,21 @@
 ##############################################################################
 
 
-# fetcher() takes two arguments: x = a Twitter username or a user id. y = a path to a chosen output folder for temporary files (y argument is optional)
-fetcher <- function(x, y = NULL) {
+# fetcher() takes two arguments: user = a Twitter username or a user id. path = a path to a chosen output folder for temporary files (path argument is optional)
+fetcher_ <- function(user, path = NULL){
 
-require(rtweet)
-  
 # Setting tmp_path and folder for follower ids. On exit the directory will be reset
 root <- getwd()
-if (!is.null(y)) {
-  tmp_path <- tempfile(pattern = x, tmpdir = y)
+if (!is.null(path)) {
+  tmp_path <- tempfile(pattern = user, tmpdir = path)
 } else {
-  tmp_path <- tempfile(pattern = x, tmpdir = tempdir())
+  tmp_path <- tempfile(pattern = user, tmpdir = tempdir())
 }
 dir.create(tmp_path)
 setwd(tmp_path)
 
 # Fetching followers count
-n_follower_ids <- (lookup_users(x)$followers_count)
+n_follower_ids <- lookup_users(user)$followers_count
 
 # Initializing parameters
 param_sleep <- 900
@@ -35,7 +33,7 @@ follower_ids_estimate <- format(Sys.time() + trunc_follower_ids, format = '%H:%M
 message("Starting to fetch ", paste(n_follower_ids), " follower IDs. Expects to be done at ", paste(follower_ids_estimate), ".")
 
 # Fetching follower ids; if rate limit is encountered: sleep for 15 minutes
-follower_ids <- get_followers(x, n = as.integer(n_follower_ids), parse = TRUE, retryonratelimit = TRUE, verbose = FALSE)
+follower_ids <- get_followers(user, n = as.integer(n_follower_ids), parse = TRUE, retryonratelimit = TRUE, verbose = FALSE)
 
 # Spliting follower_ids into n chunk_follower_ids with max size of of 90.000 Twitter ids
 chunk_follower_ids <- split(follower_ids, (seq(nrow(follower_ids)) - 1) %/% param_users)
