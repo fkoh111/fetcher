@@ -56,30 +56,30 @@ follower_ids <- get_followers(user, n = as.integer(n_follower_ids), parse = TRUE
 
 
 ## Spliting argument user n_follower_ids into chunk_follower_ids with a max size of 90.000 ids.
-## Afterwards writing chunk_follower_ids as .txt files to the tmp_path and its corresponding folder.
+## Afterwards writing chunk_follower_ids as .txt files to tmp_path and its corresponding folder.
 chunk_follower_ids <- split(follower_ids, (seq(nrow(follower_ids)) - 1) %/% param_users)
+
 mapply(write.table, x = chunk_follower_ids, row.names = FALSE, col.names = FALSE, file = paste(names(chunk_follower_ids), "txt", sep = "."))
 
 
 ## Listing and reading chunk_follower_ids from tmp_path.
 listed_ids <- list.files(path = tmp_path, pattern = "*.txt", full.names = TRUE)
+
 ids <- lapply(listed_ids, read.table)
+
 
 ## Checking verboose boolean.
 ## For the sake of good order, checking whether there's more than one chunk of listed_ids in tmp_path. ## If false subroutine is annulled.
 ## If true estimating and printing when the lookup_users process will be done.
-if (verbose == TRUE) {
+if (verbose == TRUE & length(listed_ids) > 1) {
   
-  if (length(listed_ids) > 1) {
     users_estimate <- format(Sys.time() + length(listed_ids) * param_sleep, format = '%H:%M:%S')
     message("Starting to look up users. Expects to be done at ", paste(users_estimate), ".")  
+  
   } else {
   NULL
   }
 
-  } else {
-NULL
-}
 
 
 ## From listed_ids in tmp_path user data is being looked up.
@@ -97,7 +97,7 @@ followers <- rep(NA, length(listed_ids))
     
   sleep_estimate <- format(Sys.time() + param_sleep, format = '%H:%M:%S')
   message("Avoiding rate limit by sleeping for 15 minutes. Will start again at approximately ", paste(sleep_estimate), ".")
-  
+
   } else {
     NULL
     }
@@ -111,10 +111,11 @@ binded_followers <- do_call_rbind(followers)
 ## Resetting the user wd.
 ## Checking for verboose boolean.
 on.exit(setwd(root), add = TRUE)
+
 if (verbose == TRUE) {
   
 message("Jobs done at ", paste(format(Sys.time(), format = '%H:%M:%S')), ".")
-
+  
   } else {
   NULL
 }
@@ -123,5 +124,5 @@ return(binded_followers)
 
 
 ## Function example.
-fetched_followers <- fetcher(user = "sorenpind", path =  "~/Desktop/", verbose = TRUE)
+fetched_followers <- fetcher(user = "fkoh111", path =  "~/Desktop/", verbose = FALSE)
 
