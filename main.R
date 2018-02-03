@@ -10,7 +10,8 @@
 ## fetcher() takes three arguments:
 ## user takes a Twitter username or a user id.
 ## path takes a path to a chosen output folder for temporary files (argument path is optional).
-## Verbose takes a boolean. If verbose is set to true time estimates will be printed during runtime. ## If set to false time estimates will not be printed during runtime (argument verbose defaults to true).
+## Verbose takes a boolean. If verbose is set to true time estimates will be printed during runtime.
+## If set to false time estimates will not be printed during runtime (argument verbose defaults to true).
 fetcher <- function(user, verbose = TRUE, path = NULL){
 
 
