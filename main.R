@@ -28,8 +28,8 @@ setwd(tmp_path)
 
 ## param_sleep: 900 sec used for Sys.sleep() - 15 min.
 ## param_users: 90.000 users (the max) for a lookup users batch.
-## Looking up followers count from argument user.
-## A users followers count is being divided by 90.000, truncated and then multiplied by 900 sec (15 min).
+## Fetching followers count from argument user.
+## Argument users followers count is being divided by 90.000, truncated and then multiplied by 900 sec (15 min).
 ## Thereby we're able to print time estimates for the process during runtime. 
 param_sleep <- 900
 param_users <- 90000
@@ -51,11 +51,9 @@ if (verbose == TRUE) {
 follower_ids <- get_followers(user, n = as.integer(n_follower_ids), parse = TRUE, retryonratelimit = TRUE, verbose = FALSE)
 
 
-## Spliting user follower ids into chunks of follower ids with a max size of 90.000 ids
+## Spliting user follower ids into chunks of follower ids with a max size of 90.000 ids.
+## Afterwards writing chunk follower ids as txt files to the tmp path and its corresponding folder. Each chunk containing a maximum of 90.000 follower ids.
 chunk_follower_ids <- split(follower_ids, (seq(nrow(follower_ids)) - 1) %/% param_users)
-
-
-## Writing chunk follower ids as txt files to the tmp path and its corresponding folder. Each chunk containing a maximum of 90.000 follower ids.
 mapply(write.table, x = chunk_follower_ids, row.names = FALSE, col.names = FALSE, file = paste(names(chunk_follower_ids), "txt", sep = "."))
 
 
