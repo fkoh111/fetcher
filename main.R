@@ -1,4 +1,4 @@
-
+library("rtweet")
 
 fetcher <- function(user, verbose = TRUE, path = NULL){
 # Fetches Twitter followers data from accounts having more than 90.000
@@ -14,10 +14,7 @@ fetcher <- function(user, verbose = TRUE, path = NULL){
 #  A data frame containing n observations of 20 Twitter variables where n equals 
 #  the follower count of argument user.
 
-
-  
-  
-  
+   
 # Setting a tmp folder for .txt files containing follower_ids.
 # If path argument has been provided that path will be used for tmp folder location.
 # If not the base R tempdir() function will be used to generate a tmp location.
@@ -31,7 +28,6 @@ if (!is.null(path)) {
 dir.create(tmp_path)
 setwd(tmp_path)
 
-
 # Fetching followers_count from argument user.
 # Argument n users followers_count is being divided by 90.000, truncated and
 # then multiplied by 900 sec (15 min).
@@ -44,40 +40,29 @@ param_users <- 90000  # 90.000 users (the max) for a lookup_users batch.
 trunc_follower_time <- sum(trunc(n_follower_ids / param_users) * param_sleep)
 follower_ids_estimate <- format(Sys.time() + trunc_follower_time, format = '%H:%M:%S')
 
-
 if (verbose == TRUE) {  # Checking verbose boolean. If false message is null.
   message("Starting to fetch ", paste(n_follower_ids), " follower IDs. Expects to be done at ", paste(follower_ids_estimate), ".")
-} else {
-  NULL
 }
-
 
 # Fetching argument users n_follower_ids. If rate limit is encountered: sleeping for 15 minutes.
 follower_ids <- get_followers(user, n = as.integer(n_follower_ids), parse = TRUE, retryonratelimit = TRUE, verbose = FALSE)
 
-
 # Spliting argument user n_follower_ids into chunk_follower_ids with a max size of 90.000 ids.
 chunk_follower_ids <- split(follower_ids, (seq(nrow(follower_ids)) - 1) %/% param_users)
 
-
 # Writing chunk_follower_ids as .txt files to tmp_path and its corresponding folder.
 mapply(write.table, x = chunk_follower_ids, row.names = FALSE, col.names = FALSE, file = paste(names(chunk_follower_ids), "txt", sep = "."))
-
 
 # Listing and reading chunk_follower_ids from tmp_path.
 listed_ids <- list.files(path = tmp_path, pattern = "*.txt", full.names = TRUE)
 read_ids <- lapply(listed_ids, read.table)
 
-
 # Checking verboose boolean and whether there's more than one chunk of listed_ids in tmp_path.
-# If true estimating and printing when lookup_users process will be done else null
+# If true estimating and printing when lookup_users process will be done
 if (verbose == TRUE & length(listed_ids) > 1) {
   users_estimate <- format(Sys.time() + length(listed_ids) * param_sleep, format = '%H:%M:%S')
   message("Starting to look up users. Expects to be done at ", paste(users_estimate), ".")  
-} else {
-  NULL
 }
-
 
 # From listed_ids in tmp_path user data is being looked up as object followers.
 # Rate limit is avoided by sleeping after each chunk of read_ids have been looked up.
@@ -93,21 +78,14 @@ followers <- rep(NA, length(listed_ids))
   if (verbose == TRUE) {
   sleep_estimate <- format(Sys.time() + param_sleep, format = '%H:%M:%S')
   message("Avoiding rate limit by sleeping for 15 minutes. Will start again at approximately ", paste(sleep_estimate), ".")
-  } else {
-    NULL
-    }
-  }
-
-
+  } 
+}
 
 binded_followers <- do_call_rbind(followers)  # Binding followers into df.
-
 
 on.exit(setwd(root), add = TRUE)  # Resetting to user wd.
 if (verbose == TRUE) {  # Checking verboose boolean.
   message("Jobs done at ", paste(format(Sys.time(), format = '%H:%M:%S')), ".")
-} else {
-  NULL
 }
 
 return(binded_followers)
