@@ -1,4 +1,3 @@
-library("rtweet")
 
 fetcher <- function(user, verbose = TRUE, path = NULL){
 # Fetches Twitter followers data from accounts having more than 90.000
@@ -15,6 +14,8 @@ fetcher <- function(user, verbose = TRUE, path = NULL){
 #  the follower count of argument user.
 
    
+  
+  
 # Setting a tmp folder for .txt files containing follower_ids.
 # If path argument has been provided that path will be used for tmp folder location.
 # If not the base R tempdir() function will be used to generate a tmp location.
@@ -93,4 +94,5 @@ return(binded_followers)
 
 
 # Function example.
-fetched_followers <- fetcher(user = "fkoh111", path =  "~/Desktop/", verbose = TRUE)
+library("rtweet")
+fetched_followers <- fetcher(user = "tommyannfeldt", path =  "~/Desktop/", verbose = TRUE)
