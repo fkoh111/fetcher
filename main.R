@@ -95,4 +95,4 @@ return(binded_followers)
 
 # Function example.
 library("rtweet")
-fetched_followers <- fetcher(user = "tommyannfeldt", path =  "~/Desktop/", verbose = TRUE)
+fetched_followers <- fetcher(user = "fkoh111", path =  "~/Desktop/", verbose = TRUE)
