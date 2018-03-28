@@ -11,7 +11,7 @@ fetcher <- function(user, verbose = TRUE, path = NULL){
 #
 # Returns:
 #  A data frame containing n observations of 20 Twitter variables where n equals 
-#  the follower count of argument user.
+#  the follower count of argument user. 
 
    
   
